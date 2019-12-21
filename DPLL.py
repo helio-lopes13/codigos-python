@@ -79,7 +79,7 @@ def get_literal(formula):
 def union_dict(dict1, dict2):
 	return dict(list(dict1.items()) + list(dict2.items()))
 
-
+# Executa o algoritmo usando um arquivo no formato DIMACS:
 def execucao(arquivo):
 	formula = set()
 	for linha in arquivo:
