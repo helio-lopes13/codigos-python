@@ -30,12 +30,12 @@ def dpll_rec(formula, valoracao):
 def simplificar(formula):
 	valoracao = {}
 	while tem_unitaria(formula):
-		literalUnitaria = get_literal_unitaria(formula.copy())
-		if literalUnitaria < 0:
-			valoracao = union_dict(valoracao, {-literalUnitaria: False})
+		literal_unitaria = get_literal_unitaria(formula.copy())
+		if literal_unitaria < 0:
+			valoracao = union_dict(valoracao, {-literal_unitaria: False})
 		else:
-			valoracao = union_dict(valoracao, {literalUnitaria: True})
-		formula = atualizar(formula, literalUnitaria)
+			valoracao = union_dict(valoracao, {literal_unitaria: True})
+		formula = atualizar(formula, literal_unitaria)
 	return formula, valoracao
 
 
@@ -46,9 +46,9 @@ def atualizar(formula, literal):
 			formula = formula.difference({clausula})
 		elif -literal in clausula:
 			formula.remove(clausula)
-			clausulaTemp = set(clausula)
-			clausulaTemp = clausulaTemp.difference({-literal})
-			formula.add(frozenset(clausulaTemp))
+			clausula_temp = set(clausula)
+			clausula_temp = clausula_temp.difference({-literal})
+			formula.add(frozenset(clausula_temp))
 	return formula
 
 
@@ -79,7 +79,7 @@ def get_literal(formula):
 def union_dict(dict1, dict2):
 	return dict(list(dict1.items()) + list(dict2.items()))
 
-# Executa o algoritmo usando um arquivo no formato DIMACS:
+
 def execucao(arquivo):
 	formula = set()
 	for linha in arquivo:
@@ -99,14 +99,15 @@ def execucao(arquivo):
 				valor = valor + str(-chave) + ' '
 
 		valor = valor + '0'
-		fim = open("solução.cnf", "w")
+		fim = open("solucao.cnf", "w")
 		fim.write(valor)
 		fim.close()
 	else:
 		valor = "UNSATISFIABLE"
-		fim = open("solução.cnf", "w")
+		fim = open("solucao.cnf", "w")
 		fim.write(valor)
 		fim.close()
+
 
 file = open("formula.cnf")
 execucao(file)
