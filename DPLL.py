@@ -1,12 +1,13 @@
-#*Utilizar fórmulas na forma clausal:
-#Exemplo: {frozenset({1, -2, 3}), frozenset({2, 3, -4}), frozenset({-4, 5})}
+# *Utilizar fórmulas na forma clausal:
+# Exemplo: {frozenset({1, -2, 3}), frozenset({2, 3, -4}), frozenset({-4, 5})}
 ##
 
-#Executa o DPLL recursivo definido abaixo:
+# Executa o DPLL recursivo definido abaixo:
 def dpll(formula):
 	return dpll_rec(formula, {})
 
 
+# Executa o algoritmo DPLL em uma fórmula, baseado em uma valoração, de forma recursiva:
 def dpll_rec(formula, valoracao):
 	formula, valoracao2 = simplificar(formula)
 	valoracao = union_dict(valoracao, valoracao2)
@@ -14,7 +15,7 @@ def dpll_rec(formula, valoracao):
 		return False
 	if len(formula) == 0:
 		return valoracao
-	literal = get_literal(formula)
+	literal = get_literal(formula.copy())
 	formula_copia = formula.copy()
 	formula1 = formula_copia.union({frozenset({literal})})
 	formula2 = formula_copia.union({frozenset({-literal})})
@@ -24,6 +25,8 @@ def dpll_rec(formula, valoracao):
 	return dpll_rec(formula2, valoracao)
 
 
+# Faz um processo chamado propagação de unidade, onde se busca cláusulas unitárias e lhes definem um valor,
+# causando a remoção de cláusulas com o literal da cláusula unitaria e de seu literal complementar de outras clausulas:
 def simplificar(formula):
 	valoracao = {}
 	while tem_unitaria(formula):
@@ -36,6 +39,7 @@ def simplificar(formula):
 	return formula, valoracao
 
 
+# Executa a propagação de unidade em uma formula:
 def atualizar(formula, literal):
 	for clausula in formula:
 		if literal in clausula:
@@ -48,6 +52,7 @@ def atualizar(formula, literal):
 	return formula
 
 
+# Verifica se uma fórmula tem clausula unitaria:
 def tem_unitaria(formula):
 	for clausula in formula:
 		if len(clausula) == 1:
@@ -55,27 +60,53 @@ def tem_unitaria(formula):
 	return False
 
 
+# Retorna um literal de uma clausula unitaria:
 def get_literal_unitaria(formula):
 	for clausula in formula:
 		if len(clausula) == 1:
-			for literal in clausula:
-				return literal
+			clausula = set(clausula)
+			return clausula.pop()
 
 
+# Retorna o literal de uma clausula unitaria:
 def get_literal(formula):
 	for clausula in formula:
-		for literal in clausula:
-			return literal
+		clausula = set(clausula)
+		return clausula.pop()
 
 
+# Faz a união de dois dicionários:
 def union_dict(dict1, dict2):
 	return dict(list(dict1.items()) + list(dict2.items()))
 
 
-formula = {frozenset({-1, -2}), frozenset({-1, 2})}
-solucao = dpll(formula)
-if type(solucao) is dict:
-	print('A valoração que satisfaz a fórmula é: ', solucao)
-else:
-	print('A fórmula é insatisfazível.')
+def execucao(arquivo):
+	formula = set()
+	for linha in arquivo:
+		linha = linha.split()
+		if linha[len(linha) - 1] == '0':
+			linha.remove('0')
+			linha = frozenset(map(int, linha))
+			formula.add(linha)
+	arquivo.close()
+	solucao = dpll(formula)
+	if type(solucao) is dict:
+		valor = ""
+		for chave in solucao:
+			if solucao[chave]:
+				valor = valor + str(chave) + ' '
+			else:
+				valor = valor + str(-chave) + ' '
 
+		valor = valor + '0'
+		fim = open("solução.cnf", "w")
+		fim.write(valor)
+		fim.close()
+	else:
+		valor = "UNSATISFIABLE"
+		fim = open("solução.cnf", "w")
+		fim.write(valor)
+		fim.close()
+
+file = open("formula.cnf")
+execucao(file)
