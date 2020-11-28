@@ -1,13 +1,13 @@
-def substituicao(A, A1, A2):
-	if A == A1:
-		return A2
+def substituicao(A, B, C):
+	if A == B:
+		return C
 	else:
 		if len(A) == 1:
 			return A
 		if A[0] == '¬':
-			return ('¬', substituicao(A[1], A1, A2))
+			return ('¬', substituicao(A[1], B, C))
 		if type(A[1]) == str:
-			return (substituicao(A[0], A1, A2), A[1], substituicao(A[2], A1, A2))
+			return (substituicao(A[0], B, C), A[1], substituicao(A[2], B, C))
 
 formula = (('¬', ('p', '>', 'q')), 'v', 'r')
 form = ('p', '>', 'q')
